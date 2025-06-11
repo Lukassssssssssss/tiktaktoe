@@ -1,39 +1,39 @@
 <script>
 	import { signUp, login, logout, isAuthenticated, getCurrentUser } from '$lib/pocketbase.js';
 
-	// State variables for authentication
+	// Varibablen
 	let showSignUp = false;
 	let showLogin = false;
 	let isLoggedIn = isAuthenticated();
 	let currentUser = getCurrentUser();
 
-	// Game state
+	// State
 	let showGame = false;
 	let board = Array(9).fill(''); // 3x3 grid
 	let currentPlayer = 'X';
 	let winner = null;
 	let isDraw = false;
 
-	// Track player moves for the 3-symbol limit
+
 	let playerMoves = {
-		X: [], // Array of positions where X has placed symbols
-		O: [] // Array of positions where O has placed symbols
+		X: [],
+		O: [] 
 	};
 
-	// Form data for sign up
+	// Sign up daten
 	let signUpEmail = '';
 	let signUpPassword = '';
 	let signUpUsername = '';
 
-	// Form data for login
+	// login daten
 	let loginEmail = '';
 	let loginPassword = '';
 
-	// Status messages
+	// Status
 	let message = '';
 	let isError = false;
 
-	// Function to handle sign up
+	// Login und Sign up logik
 	async function handleSignUp() {
 		if (!signUpEmail || !signUpPassword || !signUpUsername) {
 			showMessage('Please fill in all fields', true);
@@ -44,7 +44,6 @@
 
 		if (result.success) {
 			showMessage('Account created successfully! Please log in.', false);
-			// Clear form and hide sign up
 			signUpEmail = '';
 			signUpPassword = '';
 			signUpUsername = '';
@@ -54,7 +53,6 @@
 		}
 	}
 
-	// Function to handle login
 	async function handleLogin() {
 		if (!loginEmail || !loginPassword) {
 			showMessage('Please fill in all fields', true);
@@ -67,7 +65,6 @@
 			showMessage('Logged in successfully!', false);
 			isLoggedIn = true;
 			currentUser = result.user;
-			// Clear form and hide login
 			loginEmail = '';
 			loginPassword = '';
 			showLogin = false;
@@ -76,7 +73,6 @@
 		}
 	}
 
-	// Function to handle logout
 	function handleLogout() {
 		logout();
 		isLoggedIn = false;
@@ -84,7 +80,6 @@
 		showMessage('Logged out successfully!', false);
 	}
 
-	// Helper function to show messages
 	function showMessage(text, error = false) {
 		message = text;
 		isError = error;
@@ -94,74 +89,64 @@
 		}, 3000);
 	}
 
-	// Game Functions
+	// Spiel funktionen + logik
 
-	// Function to make a move
+
 	function makeMove(position) {
-		// Can't place on occupied cell or if game is over
+		
 		if (board[position] !== '' || winner || isDraw) return;
 
-		// If current player already has 3 symbols, remove the oldest one first
 		if (playerMoves[currentPlayer].length >= 3) {
-			const oldestPosition = playerMoves[currentPlayer][0]; // Get the oldest position
-			board[oldestPosition] = ''; // Remove the symbol from board
-			playerMoves[currentPlayer].shift(); // Remove from tracking array
+			const oldestPosition = playerMoves[currentPlayer][0]; //ältester Zug
+			board[oldestPosition] = ''; 
+			playerMoves[currentPlayer].shift(); 
 		}
 
-		// Place new symbol on the board
 		board[position] = currentPlayer;
-
-		// Add this position to the player's move tracking
 		playerMoves[currentPlayer].push(position);
-
-		// Check for winner after placing the symbol
 		winner = checkWinner();
 
-		// Check for draw if no winner
+		// Unetschieden
 		if (!winner) {
 			isDraw = checkDraw();
 		}
 
-		// Switch to the other player if game continues
 		if (!winner && !isDraw) {
 			currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
 		}
 	}
 
-	// Function to check for winner
+	// Gewinnlogik
 	function checkWinner() {
-		// All possible winning combinations
+		// alle möglichen Variationen 
 		const winPatterns = [
 			[0, 1, 2],
 			[3, 4, 5],
-			[6, 7, 8], // Rows
+			[6, 7, 8], 
 			[0, 3, 6],
 			[1, 4, 7],
-			[2, 5, 8], // Columns
+			[2, 5, 8], 
 			[0, 4, 8],
-			[2, 4, 6] // Diagonals
+			[2, 4, 6] 
 		];
 
 		for (const pattern of winPatterns) {
 			const [a, b, c] = pattern;
 			if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-				return board[a]; // Return the winning player
+				return board[a]; 
 			}
 		}
 
-		return null; // No winner
+		return null; // Fals kein Sieger
 	}
 
-	// Function to check for draw
+
 	function checkDraw() {
-		// In this variant, a draw is rare since symbols get removed
-		// We'll consider it a draw if the board is full and no winner
-		// (which shouldn't happen often with the 3-symbol limit)
 		const filledCells = board.filter((cell) => cell !== '').length;
 		return filledCells === 9 && !winner;
 	}
 
-	// Function to reset the game
+	// Game reset
 	function resetGame() {
 		board = Array(9).fill('');
 		currentPlayer = 'X';
@@ -176,7 +161,7 @@
 
 <div class="flex min-h-screen items-center justify-center bg-gray-100 px-4">
 	<div class="w-full max-w-md space-y-8">
-		<!-- Welcome heading -->
+
 		<div class="text-center">
 			<h1 class="mb-2 text-3xl font-bold text-gray-900">Welcome to TikTakToe</h1>
 			<p class="text-gray-600">Sign up or log in to continue</p>
@@ -193,10 +178,10 @@
 			</div>
 		{/if}
 
-		<!-- Main buttons for non-authenticated users -->
+
 		{#if !isLoggedIn}
 			<div class="space-y-4">
-				<!-- Sign Up and Login buttons -->
+
 				{#if !showSignUp && !showLogin}
 					<div class="space-y-3">
 						<button
@@ -329,7 +314,7 @@
 			</div>
 		{/if}
 
-		<!-- Welcome message for authenticated users (only show when not in game) -->
+	
 		{#if isLoggedIn && currentUser && !showGame}
 			<div class="rounded-lg bg-white p-6 text-center shadow-md">
 				<h2 class="mb-2 text-2xl font-semibold text-green-600">Welcome back!</h2>
@@ -354,7 +339,7 @@
 			</div>
 		{/if}
 
-		<!-- Tic Tac Toe Game -->
+		<!-- Spiel  -->
 		{#if showGame && isLoggedIn}
 			<div class="rounded-lg bg-white p-6 shadow-md">
 				<div class="mb-4 flex items-center justify-between">
@@ -367,7 +352,7 @@
 					</button>
 				</div>
 
-				<!-- Game Info -->
+				<!-- info -->
 				<div class="mb-4 text-center">
 					<p class="text-lg">
 						Current Player: <span
@@ -383,7 +368,7 @@
 					{/if}
 				</div>
 
-				<!-- Game Board -->
+				<!-- Spielboard -->
 				<div class="mx-auto mb-4 grid max-w-xs grid-cols-3 gap-2">
 					{#each board as cell, index}
 						<button
