@@ -72,6 +72,18 @@
 		showMessage('Logged out.', false);
 	}
 
+	function handleBackToLobby() {
+		game = null;
+		board = Array(9).fill('');
+		currentPlayer = 'X';
+		winner = null;
+		isDraw = false;
+		lobbyCode = ''; // Optional: Lobbycode leeren, falls neu beitreten
+		showLobby = false; // Lobby im klassischen Sinne hier evtl. nicht nötig, je nach UI
+		showGame = false;
+		showMessage('Zurück zur Lobby.', false);
+	}
+
 	async function handleCreateGame() {
 		const rec = await createGame(currentUser.id, currentUser.username);
 		game = rec;
@@ -247,7 +259,7 @@
 			<div class="rounded-lg bg-white p-6 text-center shadow">
 				<p class="mb-4">Waiting for opponent...</p>
 				<p class="mb-4 text-xl font-semibold">Lobby Code: {lobbyCode}</p>
-				<button on:click={handleLogout} class="w-full rounded-lg bg-red-600 py-2 text-white"
+				<button on:click={handleBackToLobby} class="w-full rounded-lg bg-red-600 py-2 text-white"
 					>Cancel / Logout</button
 				>
 			</div>
@@ -281,7 +293,7 @@
 					<p class="mb-2 text-xl text-yellow-600">It's a draw!</p>
 				{/if}
 				<button on:click={handleLogout} class="w-full rounded-lg bg-red-600 py-2 text-white"
-					>Logout / Exit</button
+					>Logout</button
 				>
 			</div>
 		{/if}
