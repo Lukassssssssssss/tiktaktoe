@@ -1,6 +1,6 @@
 import PocketBase from 'pocketbase';
 
-export const pb = new PocketBase('http://127.0.0.1:8090');
+export const pb = new PocketBase('http://10.20.0.203:8090');
 
 export function isAuthenticated() {
 	return pb.authStore.isValid;

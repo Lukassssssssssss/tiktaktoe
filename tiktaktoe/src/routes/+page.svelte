@@ -292,8 +292,8 @@
 				{:else if isDraw}
 					<p class="mb-2 text-xl text-yellow-600">It's a draw!</p>
 				{/if}
-				<button on:click={handleLogout} class="w-full rounded-lg bg-red-600 py-2 text-white"
-					>Logout</button
+				<button on:click={handleBackToLobby} class="w-full rounded-lg bg-red-600 py-2 text-white"
+					>Goon back to Lobby</button
 				>
 			</div>
 		{/if}
